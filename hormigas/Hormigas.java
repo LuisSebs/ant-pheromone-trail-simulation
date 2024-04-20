@@ -11,7 +11,7 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 140;
+    int hormigas = 1;
     ModeloHormigas modelo;
 
     @Override
@@ -45,12 +45,17 @@ public class Hormigas extends PApplet {
         // Dibujamos hormigas
         for (Hormiga h : modelo.hormigas){
             fill(0,255,0);
-            rect(h.posX * modelo.tamanio, h.posY * modelo.tamanio, modelo.tamanio, modelo.tamanio);
+            rect(h.posY * modelo.tamanio, h.posX * modelo.tamanio, modelo.tamanio, modelo.tamanio);
         }
 
         // Siguiente paso
-        modelo.siguiente();
+        //modelo.siguiente();
         
+    }
+
+    @Override
+    public void mouseClicked(){
+        modelo.siguiente();
     }
 
     class Celda {
@@ -142,8 +147,8 @@ public class Hormigas extends PApplet {
                 }
             }
             // Agregamos colonia 
-            int inicioColX = 10;
-            int inicioColY = 10;
+            int inicioColX = 9; // celda 10
+            int inicioColY = 9; // Celda 10
             int tamanioCol = 4;
             for (int i = 0 ; i < tamanioCol ; i++){
                 for (int j = 0; j < tamanioCol ; j++ ){
@@ -151,8 +156,8 @@ public class Hormigas extends PApplet {
                 }
             }
             // Agregamos comida
-            int inicioComX = 80;
-            int inicioComY = 100;
+            int inicioComX = 79; // celda 80
+            int inicioComY = 99; // celda 100
             int tamanioCom = 4;
             for (int  i = 0; i < tamanioCom ; i++){
                 for (int j = 0; j < tamanioCom ; j++){
@@ -213,6 +218,71 @@ public class Hormigas extends PApplet {
             return resultado;
         }
 
+        public int direccionAMoverse(Hormiga h, int direccion){
+
+            int dic1 = -1;
+            int dic2 = -1;
+            int dic3 = -1;
+
+            double p_d1 = 0;
+            double p_d2 = 0;
+            double p_d3 = 0;
+
+            int resultado = -1;
+            switch (direccion) {
+                case 0:
+                    int[] op0 = {7,0,1};
+                    dic1 = 7;
+                    dic2 = 0;
+                    dic3 = 1;
+                    break;
+                case 1:
+                    int[] op1 = {0,1,2};
+                    dic1 = 0;
+                    dic2 = 1;
+                    dic3 = 2;
+                    break;
+                case 2:
+                    int[] op2 = {1,2,3};
+                    dic1 = 1;
+                    dic2 = 2;
+                    dic3 = 3;
+                    break;
+                case 3:
+                    int[] op3 = {2,3,4}; 
+                    dic1 = 2;
+                    dic2 = 3;
+                    dic3 = 4;                  
+                    break;
+                case 4:
+                    int[] op4 = {3,4,5};
+                    dic1 = 3;
+                    dic2 = 4;
+                    dic3 = 5;
+                    break;
+                case 5:
+                    int[] op5 = {4,5,6};
+                    dic1 = 4;
+                    dic2 = 5;
+                    dic3 = 6;
+                    break;
+                case 6:
+                    int[] op6 = {5,6,7};
+                    dic1 = 5;
+                    dic2 = 6;
+                    dic3 = 7;
+                    break;
+                case 7:
+                    int[] op7 = {6,7,0};
+                    dic1 = 6;
+                    dic2 = 7;
+                    dic3 = 0;
+                    break;
+            }
+
+            return resultado;
+        }
+
         /**
          * Determina si una hormiga puede moverse dada
          * su posicion y una direccion
@@ -233,56 +303,56 @@ public class Hormigas extends PApplet {
                 case 0:
                     newX = x-1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 1: 
                     newX = x-1;
                     newY = y;                   
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 2:
                     newX = x-1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 3:
                     newX = x;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 4:
                     newX = x+1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 5:
                     newX = x+1;
                     newY = y;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 6:
                     newX = x+1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
                 case 7:
                     newX = x;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return true;
                     }
                     break;
@@ -314,56 +384,56 @@ public class Hormigas extends PApplet {
                 case 0:
                     newX = x-1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 1: 
                     newX = x-1;
                     newY = y;                   
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 2:
                     newX = x-1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 3:
                     newX = x;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 4:
                     newX = x+1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 5:
                     newX = x+1;
                     newY = y;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 6:
                     newX = x+1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
                 case 7:
                     newX = x;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         return mundo[newX][newY];
                     }
                     break;
@@ -390,7 +460,7 @@ public class Hormigas extends PApplet {
                 case 0:
                     newX = x-1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -399,7 +469,7 @@ public class Hormigas extends PApplet {
                 case 1: 
                     newX = x-1;
                     newY = y;                   
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -408,7 +478,7 @@ public class Hormigas extends PApplet {
                 case 2:
                     newX = x-1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -417,7 +487,7 @@ public class Hormigas extends PApplet {
                 case 3:
                     newX = x;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -426,7 +496,7 @@ public class Hormigas extends PApplet {
                 case 4:
                     newX = x+1;
                     newY = y+1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -435,7 +505,7 @@ public class Hormigas extends PApplet {
                 case 5:
                     newX = x+1;
                     newY = y;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -444,7 +514,7 @@ public class Hormigas extends PApplet {
                 case 6:
                     newX = x+1;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
@@ -453,22 +523,54 @@ public class Hormigas extends PApplet {
                 case 7:
                     newX = x;
                     newY = y-1;
-                    if (( (0 <= newX) && (newX <= ancho) ) && ( (0 <= newY) && (newY <= alto))){
+                    if (( (0 <= newX) && (newX <= alto-1) ) && ( (0 <= newY) && (newY <= ancho-1))){
                         h.posX = newX;
                         h.posY = newY;
                         h.direccion = direccion;
                     }
                     break;
             }
+
         }
 
+        /**
+         * Siguiente ejecucion del algoritmo
+         */
         public void siguiente(){
+            
+            if (generacion < 10){
+                System.out.println("------------------------------Iteracion: "+generacion);
+                for (Hormiga h : hormigas){
+                    System.out.println("X: "+h.posX);
+                    System.out.println("Y: "+h.posY);
+                    boolean next = false;
+                    do{
+                        int dir = direccionAleatoriaFrente(h.direccion);                        
+                        if (puedeMoverse(h, dir)){
+                            System.out.println("Direccion: "+dir);
+                            Celda c = celdaAMoverse(h, dir);
+                            moverHormiga(h, dir);                            
+                            System.out.println("newX: "+ h.posX);
+                            System.out.println("newY: "+ h.posY);    
+                            System.out.println("newCeldaX: "+c.celdaX);
+                            System.out.println("newCeldaY: "+c.celdaY);                        
+                            next = true;
+                        }else{
+                            h.direccion = map.get(h.direccion);
+                        }
+                    }while(!next);                         
+                }                
+            }
+            generacion += 1;
+            
+            /*
             for (Hormiga h : hormigas){
                 boolean next = false;
                 do{
-                    int dir = direccionAleatoriaFrente(h.direccion);
+                    int dir = direccionAleatoriaFrente(h.direccion);                        
                     if (puedeMoverse(h, dir)){
-                        moverHormiga(h, dir);
+                        // Celda c = celdaAMoverse(h, dir);
+                        moverHormiga(h, dir);                                                   
                         next = true;
                     }else{
                         h.direccion = map.get(h.direccion);
@@ -476,6 +578,7 @@ public class Hormigas extends PApplet {
                 }while(!next);                         
             }
             generacion += 1;
+            */
         }
     }
 
