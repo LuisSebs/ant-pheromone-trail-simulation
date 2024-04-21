@@ -11,7 +11,7 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 1;
+    int hormigas = 140;
     ModeloHormigas modelo;
 
     @Override
@@ -49,7 +49,7 @@ public class Hormigas extends PApplet {
         }
 
         // Siguiente paso
-        //modelo.siguiente();
+        modelo.siguiente();
         
     }
 
@@ -62,7 +62,7 @@ public class Hormigas extends PApplet {
 
         int celdaX, celdaY;
         int estado;
-        int feromonas;
+        double feromonas;
 
         /**
          * Constructor de una celda
@@ -74,7 +74,7 @@ public class Hormigas extends PApplet {
             this.celdaX = celdaX;
             this.celdaY = celdaY;
             this.estado = estado;
-            this.feromonas = 0;
+            this.feromonas = 1.0;
         }
     }
 
@@ -220,65 +220,90 @@ public class Hormigas extends PApplet {
 
         public int direccionAMoverse(Hormiga h, int direccion){
 
-            int dic1 = -1;
-            int dic2 = -1;
-            int dic3 = -1;
+            int dic1 = -1; // direccion 1
+            int dic2 = -1; // direccion 2
+            int dic3 = -1; // direccion 3
 
-            double p_d1 = 0;
-            double p_d2 = 0;
-            double p_d3 = 0;
-
+            double p_d1 = 0.0; // probabilidad de moverse a dic1
+            double p_d2 = 0.0; // probabilidad de moverse a dic2
+            double p_d3 = 0.0; // probabilidad de moverse a dic3
+    
             int resultado = -1;
+
             switch (direccion) {
                 case 0:
-                    int[] op0 = {7,0,1};
+                    // 7 0 1
                     dic1 = 7;
                     dic2 = 0;
                     dic3 = 1;
                     break;
                 case 1:
-                    int[] op1 = {0,1,2};
+                    // 0 1 2
                     dic1 = 0;
                     dic2 = 1;
                     dic3 = 2;
                     break;
                 case 2:
-                    int[] op2 = {1,2,3};
+                    // 1 2 3
                     dic1 = 1;
                     dic2 = 2;
                     dic3 = 3;
                     break;
                 case 3:
-                    int[] op3 = {2,3,4}; 
+                    // 2 3 4
                     dic1 = 2;
                     dic2 = 3;
                     dic3 = 4;                  
                     break;
                 case 4:
-                    int[] op4 = {3,4,5};
+                    // 3 4 5
                     dic1 = 3;
                     dic2 = 4;
                     dic3 = 5;
                     break;
                 case 5:
-                    int[] op5 = {4,5,6};
+                    // 4 5 6
                     dic1 = 4;
                     dic2 = 5;
                     dic3 = 6;
                     break;
                 case 6:
-                    int[] op6 = {5,6,7};
+                    // 5 6 7
                     dic1 = 5;
                     dic2 = 6;
                     dic3 = 7;
                     break;
                 case 7:
-                    int[] op7 = {6,7,0};
+                    // 6 7 0
                     dic1 = 6;
                     dic2 = 7;
                     dic3 = 0;
                     break;
             }
+            
+            // feromonas de las celdas
+            double f_d1 = celdaAMoverse(h, dic1) == null ? 0.0: celdaAMoverse(h, dic1).feromonas;
+            double f_d2 = celdaAMoverse(h, dic2) == null ? 0.0: celdaAMoverse(h, dic2).feromonas;
+            double f_d3 = celdaAMoverse(h, dic3) == null ? 0.0: celdaAMoverse(h, dic3).feromonas;
+
+            // Sumatoria de las feromonas
+            double sumf = f_d1 + f_d2 + f_d3;
+
+            // Probabilidades
+            p_d1 = f_d1 / sumf;
+            p_d2 = f_d2 / sumf;
+            p_d3 = f_d3 / sumf;
+
+            // Numero random
+            double num = rnd.nextDouble();
+
+            // Decision
+            if (num < p_d1){
+                resultado = dic1;
+            }else if (num < p_d1 + p_d2){
+                resultado = dic2;
+            }else
+                resultado = dic3;
 
             return resultado;
         }
@@ -537,7 +562,7 @@ public class Hormigas extends PApplet {
          * Siguiente ejecucion del algoritmo
          */
         public void siguiente(){
-            
+            /*
             if (generacion < 10){
                 System.out.println("------------------------------Iteracion: "+generacion);
                 for (Hormiga h : hormigas){
@@ -562,12 +587,13 @@ public class Hormigas extends PApplet {
                 }                
             }
             generacion += 1;
-            
-            /*
+             */
+
             for (Hormiga h : hormigas){
                 boolean next = false;
                 do{
-                    int dir = direccionAleatoriaFrente(h.direccion);                        
+                    // int dir = direccionAleatoriaFrente(h.direccion);  
+                    int dir = direccionAMoverse(h, h.direccion);
                     if (puedeMoverse(h, dir)){
                         // Celda c = celdaAMoverse(h, dir);
                         moverHormiga(h, dir);                                                   
@@ -577,8 +603,7 @@ public class Hormigas extends PApplet {
                     }
                 }while(!next);                         
             }
-            generacion += 1;
-            */
+            generacion += 1;            
         }
     }
 
