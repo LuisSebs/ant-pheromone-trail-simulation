@@ -11,12 +11,12 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 140;
+    int hormigas = 50;
     ModeloHormigas modelo;
 
     @Override
     public void setup(){
-        background(50);
+        background(0,0,0);
         modelo = new ModeloHormigas(ancho, alto, celda, hormigas);
     }
 
@@ -29,21 +29,25 @@ public class Hormigas extends PApplet {
     public void draw(){
 
         for (int i = 0; i < alto; i++){
-            for (int j = 0; j < ancho; j++){
-                // Dibujamos colonia
-                if (modelo.mundo[i][j].estado == 1){
-                    fill(0,0,255);
-                }else if (modelo.mundo[i][j].estado == 2){ // Dibujamos comida
+            for (int j = 0; j < ancho; j++){   
+                Celda c = modelo.mundo[i][j];         
+                if (c.estado == 1){
+                    // Dibujamos colonia
+                    fill(90,75,50);
+                }else if (c.estado == 2){
+                    // Dibujamos comida
                     fill(255,0,0);
-                } else {
-                    fill(50);
-                }             
+                }else{
+                    // Dibujamos feromonas
+                    fill(0,0,(int) c.feromonas * 5);
+                }          
                 rect(j * celda, i * celda, celda, celda);
             }
         }
 
         // Dibujamos hormigas
         for (Hormiga h : modelo.hormigas){
+            //fill(90,75,50);
             fill(0,255,0);
             rect(h.posY * modelo.tamanio, h.posX * modelo.tamanio, modelo.tamanio, modelo.tamanio);
         }
@@ -110,6 +114,8 @@ public class Hormigas extends PApplet {
         int alto;
         int tamanio;
         int generacion;
+        int minFeromonas = 1;
+        int maxFeromonas = 200;
         Celda[][] mundo;
         ArrayList<Hormiga> hormigas;
         Random rnd = new Random();
@@ -559,6 +565,27 @@ public class Hormigas extends PApplet {
         }
 
         /**
+         * Aumenta las feromonas en la casilla
+         * donde esta la hormiga.
+         * @param h hormiga
+         */
+        public void dejarFeromona(Hormiga h){
+            Celda c = mundo[h.posX][h.posY];
+            c.feromonas = maxFeromonas;
+        }
+
+        public void evapora(){
+            for (int i = 0; i < alto; i++){
+                for (int j = 0; j < ancho; j++){
+                    Celda c = mundo[i][j];
+                    if (c.feromonas > minFeromonas){
+                        c.feromonas--;
+                    }
+                }
+            }
+        }
+
+        /**
          * Siguiente ejecucion del algoritmo
          */
         public void siguiente(){
@@ -588,7 +615,7 @@ public class Hormigas extends PApplet {
             }
             generacion += 1;
              */
-
+            evapora();
             for (Hormiga h : hormigas){
                 boolean next = false;
                 do{
@@ -596,13 +623,15 @@ public class Hormigas extends PApplet {
                     int dir = direccionAMoverse(h, h.direccion);
                     if (puedeMoverse(h, dir)){
                         // Celda c = celdaAMoverse(h, dir);
+                        dejarFeromona(h);
                         moverHormiga(h, dir);                                                   
                         next = true;
                     }else{
+                        // hacemos que la hormiga se oriente a la direccion contraria
                         h.direccion = map.get(h.direccion);
                     }
                 }while(!next);                         
-            }
+            }            
             generacion += 1;            
         }
     }
