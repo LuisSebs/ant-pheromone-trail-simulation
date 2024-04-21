@@ -2,6 +2,7 @@ package hormigas;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Random;
 
 import processing.core.PApplet;
@@ -11,7 +12,7 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 4;
+    int hormigas = 100;
     ModeloHormigas modelo;
 
     @Override
@@ -121,7 +122,7 @@ public class Hormigas extends PApplet {
         int tamanio;
         int generacion;
         int minFeromonas = 1;
-        int maxFeromonas = 150;
+        int maxFeromonas = 100;
         int inicioColX;
         int inicioColY;
         Celda[][] mundo;
@@ -662,7 +663,7 @@ public class Hormigas extends PApplet {
          */
         public void moverHormigaAlNido(Hormiga h){
 
-            int direccion = -1;
+            int direccionAMirar = -1;
             double min = -1;
 
             for (int i = 0; i < 8 ; i++){
@@ -672,17 +673,17 @@ public class Hormigas extends PApplet {
                     if (min != -1){
                         // comparamos
                         if(d < min){
-                            direccion = i;
+                            direccionAMirar = i;
                             min = d;
                         }
                     }else{
-                        direccion = i;
+                        direccionAMirar = i;
                         min = d;
                     }
                 }
             }
 
-            moverHormiga(h, direccion);                        
+            moverHormiga(h, direccionAleatoriaFrente(direccionAMirar));                        
         }
 
         /**
@@ -699,57 +700,49 @@ public class Hormigas extends PApplet {
          * Siguiente ejecucion del algoritmo
          */
         public void siguiente(){
+            // Evaporamos en cada iteracion un poco las feromonas
+            evapora();
             for (Hormiga h : hormigas){
+                // Siguiente iteracion
                 boolean next = false;
-                do{
+                do{ 
+                    // Si la hormiga va cargando comida
                     if (h.comida){
+                        // Si la hormiga esta en el nido
                         if (estaEnElNido(h)){
+                            // Suelta la comida
                             h.comida = false;
                         }else{
+                            // Movemos la comida al nido
                             moverHormigaAlNido(h);
+                            // Dejamos un rastro de feromonas
+                            dejarFeromona(h);
                         }
                         next = true;              
                     }else{
-                        int dir = direccionAMoverse(h, h.direccion);                        
+                        // Movemos a la hormiga a una celda dependiendo de la cantidad de feromonas
+                        int dir = direccionAMoverse(h, h.direccion);
+                        // Si puede moverse a la direccion elegida                  
                         if (puedeMoverse(h, dir)){
+                            // Movemos hormiga
                             moverHormiga(h, dir);
+                            // Si al mover a la hormiga encontro comida
                             if (mundo[h.posX][h.posY].estado == 2){
+                                // La quitamos de la celda
+                                mundo[h.posX][h.posY].estado = 0;
+                                // Indicamos que la hormiga la recogio
                                 h.comida = true;
                             }
                             next = true;
                         }else{
+                            // La movemos en la direccion contraria
                             h.direccion = map.get(h.direccion);
                         }
                     }
                 }while(!next);                         
-            }            
+            }     
+            // Actualizamos las generaciones       
             generacion += 1;  
-            /*
-            evapora();
-            for (Hormiga h : hormigas){
-                boolean next = false;
-                do{
-                    // int dir = direccionAleatoriaFrente(h.direccion);  
-                    int dir = direccionAMoverse(h, h.direccion);
-                    if (puedeMoverse(h, dir)){
-                        if (hayComida(h, dir) || hayColonia(h, dir)){
-                            moverHormiga(h, dir);
-                            dejarFeromona(h);
-                            // hacemos que la hormiga se oriente a la direccion contraria
-                            h.direccion = map.get(h.direccion);
-                        }else{
-                            dejarFeromona(h);
-                            moverHormiga(h, dir);
-                        }                                                                                                  
-                        next = true;
-                    }else{
-                        // hacemos que la hormiga se oriente a la direccion contraria
-                        h.direccion = map.get(h.direccion);
-                    }
-                }while(!next);                         
-            }            
-            generacion += 1;    
-            */        
         }
     }
 
