@@ -11,7 +11,7 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 50;
+    int hormigas = 100;
     ModeloHormigas modelo;
 
     @Override
@@ -65,6 +65,9 @@ public class Hormigas extends PApplet {
     class Celda {
 
         int celdaX, celdaY;
+        /**
+         * 0: no hay nada, 1: hay colonia 2: hay comida
+         */
         int estado;
         double feromonas;
 
@@ -115,7 +118,7 @@ public class Hormigas extends PApplet {
         int tamanio;
         int generacion;
         int minFeromonas = 1;
-        int maxFeromonas = 200;
+        int maxFeromonas = 150;
         Celda[][] mundo;
         ArrayList<Hormiga> hormigas;
         Random rnd = new Random();
@@ -162,9 +165,9 @@ public class Hormigas extends PApplet {
                 }
             }
             // Agregamos comida
-            int inicioComX = 79; // celda 80
-            int inicioComY = 99; // celda 100
-            int tamanioCom = 4;
+            int inicioComX = 69; // celda 70
+            int inicioComY = 89; // celda 90
+            int tamanioCom = 10;
             for (int  i = 0; i < tamanioCom ; i++){
                 for (int j = 0; j < tamanioCom ; j++){
                     mundo[inicioComX + i][inicioComY + j].estado = 2;
@@ -224,6 +227,16 @@ public class Hormigas extends PApplet {
             return resultado;
         }
 
+        /**
+         * Determina la direccion a moverse dependiendo
+         * de la cantidad de feromonas en las celdas
+         * a las que se puede mover.
+         * @param h hormiga
+         * @param direccion de la hormiga
+         * @return direccion a la cual moverse
+         * regresa -1 si no puede moverse dada
+         * la direccion de la hormiga.
+         */
         public int direccionAMoverse(Hormiga h, int direccion){
 
             int dic1 = -1; // direccion 1
@@ -574,6 +587,9 @@ public class Hormigas extends PApplet {
             c.feromonas = maxFeromonas;
         }
 
+        /**
+         * Evapora las feromonas poco a poco
+         */
         public void evapora(){
             for (int i = 0; i < alto; i++){
                 for (int j = 0; j < ancho; j++){
@@ -586,35 +602,36 @@ public class Hormigas extends PApplet {
         }
 
         /**
+         * Determina si hay comida dada
+         * la posicion de la hormiga y
+         * la direccion.
+         * @param h hormiga
+         * @param direccion direccion
+         * @return true si hay comida, false en caso contrario
+         */
+        public boolean hayComida(Hormiga h, int direccion){
+            Celda c = celdaAMoverse(h, direccion);            
+            return c.estado == 2;
+        }
+
+                /**
+         * Determina si hay colonia dada
+         * la posicion de la hormiga y
+         * la direccion.
+         * @param h hormiga
+         * @param direccion direccion
+         * @return true si hay colonia, false en caso contrario
+         */
+        public boolean hayColonia(Hormiga h, int direccion){
+            Celda c = celdaAMoverse(h, direccion);            
+            return c.estado == 1;
+        }
+
+
+        /**
          * Siguiente ejecucion del algoritmo
          */
         public void siguiente(){
-            /*
-            if (generacion < 10){
-                System.out.println("------------------------------Iteracion: "+generacion);
-                for (Hormiga h : hormigas){
-                    System.out.println("X: "+h.posX);
-                    System.out.println("Y: "+h.posY);
-                    boolean next = false;
-                    do{
-                        int dir = direccionAleatoriaFrente(h.direccion);                        
-                        if (puedeMoverse(h, dir)){
-                            System.out.println("Direccion: "+dir);
-                            Celda c = celdaAMoverse(h, dir);
-                            moverHormiga(h, dir);                            
-                            System.out.println("newX: "+ h.posX);
-                            System.out.println("newY: "+ h.posY);    
-                            System.out.println("newCeldaX: "+c.celdaX);
-                            System.out.println("newCeldaY: "+c.celdaY);                        
-                            next = true;
-                        }else{
-                            h.direccion = map.get(h.direccion);
-                        }
-                    }while(!next);                         
-                }                
-            }
-            generacion += 1;
-             */
             evapora();
             for (Hormiga h : hormigas){
                 boolean next = false;
@@ -622,9 +639,15 @@ public class Hormigas extends PApplet {
                     // int dir = direccionAleatoriaFrente(h.direccion);  
                     int dir = direccionAMoverse(h, h.direccion);
                     if (puedeMoverse(h, dir)){
-                        // Celda c = celdaAMoverse(h, dir);
-                        dejarFeromona(h);
-                        moverHormiga(h, dir);                                                   
+                        if (hayComida(h, dir) || hayColonia(h, dir)){
+                            moverHormiga(h, dir);
+                            dejarFeromona(h);
+                            // hacemos que la hormiga se oriente a la direccion contraria
+                            h.direccion = map.get(h.direccion);
+                        }else{
+                            dejarFeromona(h);
+                            moverHormiga(h, dir);
+                        }                                                                                                  
                         next = true;
                     }else{
                         // hacemos que la hormiga se oriente a la direccion contraria
