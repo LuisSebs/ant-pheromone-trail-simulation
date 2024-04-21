@@ -11,7 +11,7 @@ public class Hormigas extends PApplet {
     int alto = 100;
     int ancho = 150;
     int celda = 4;
-    int hormigas = 100;
+    int hormigas = 4;
     ModeloHormigas modelo;
 
     @Override
@@ -90,6 +90,8 @@ public class Hormigas extends PApplet {
         int posX;
         int posY;
         int direccion;
+        /** true si esta cargando comida, false en caso contrario */
+        boolean comida;
 
         /**
          * Constructor de una hormiga
@@ -107,7 +109,8 @@ public class Hormigas extends PApplet {
         Hormiga(int posX, int posY, int direccion){
             this.posX = posX;
             this.posY = posY;
-            this.direccion = direccion;            
+            this.direccion = direccion;    
+            this.comida = false;        
         }
     }
 
@@ -119,6 +122,8 @@ public class Hormigas extends PApplet {
         int generacion;
         int minFeromonas = 1;
         int maxFeromonas = 150;
+        int inicioColX;
+        int inicioColY;
         Celda[][] mundo;
         ArrayList<Hormiga> hormigas;
         Random rnd = new Random();
@@ -156,8 +161,8 @@ public class Hormigas extends PApplet {
                 }
             }
             // Agregamos colonia 
-            int inicioColX = 9; // celda 10
-            int inicioColY = 9; // Celda 10
+            this.inicioColX = 9; // celda 10
+            this.inicioColY = 9; // Celda 10
             int tamanioCol = 4;
             for (int i = 0 ; i < tamanioCol ; i++){
                 for (int j = 0; j < tamanioCol ; j++ ){
@@ -627,11 +632,99 @@ public class Hormigas extends PApplet {
             return c.estado == 1;
         }
 
+        /**
+         * Regresa la distancia de la celda al nido
+         * @param c celda
+         * @return la distancia euclideana
+         */
+        public double distanciaAlNido(Celda c){
+
+            Celda n = mundo[inicioColX][inicioColY];
+
+            int x1 = n.celdaX;
+            int y1 = n.celdaY;
+
+            int x2 = c.celdaX;
+            int y2 = c.celdaY;
+
+            // Distancia euclideana
+            double d = Math.sqrt(Math.pow((x2-x1), 2) + Math.pow((y2-y1), 2));
+
+            return d;
+
+        }
+
+        /**
+         * Mueve la hormiga a la celda a su
+         * alrededor que este mas cerca al
+         * nido.
+         * @param h hormiga a mover.
+         */
+        public void moverHormigaAlNido(Hormiga h){
+
+            int direccion = -1;
+            double min = -1;
+
+            for (int i = 0; i < 8 ; i++){
+                Celda c  = celdaAMoverse(h, i);
+                if (c != null){
+                    double d = distanciaAlNido(c);
+                    if (min != -1){
+                        // comparamos
+                        if(d < min){
+                            direccion = i;
+                            min = d;
+                        }
+                    }else{
+                        direccion = i;
+                        min = d;
+                    }
+                }
+            }
+
+            moverHormiga(h, direccion);                        
+        }
+
+        /**
+         * Determina si la hormiga esta en el nido
+         * @param h hormiga
+         * @return true si esta en el nido, false
+         * en caso contrario
+         */
+        public boolean estaEnElNido(Hormiga h){
+            return (inicioColX == h.posX) && (inicioColY == h.posY);
+        }
 
         /**
          * Siguiente ejecucion del algoritmo
          */
         public void siguiente(){
+            for (Hormiga h : hormigas){
+                boolean next = false;
+                do{
+                    if (h.comida){
+                        if (estaEnElNido(h)){
+                            h.comida = false;
+                        }else{
+                            moverHormigaAlNido(h);
+                        }
+                        next = true;              
+                    }else{
+                        int dir = direccionAMoverse(h, h.direccion);                        
+                        if (puedeMoverse(h, dir)){
+                            moverHormiga(h, dir);
+                            if (mundo[h.posX][h.posY].estado == 2){
+                                h.comida = true;
+                            }
+                            next = true;
+                        }else{
+                            h.direccion = map.get(h.direccion);
+                        }
+                    }
+                }while(!next);                         
+            }            
+            generacion += 1;  
+            /*
             evapora();
             for (Hormiga h : hormigas){
                 boolean next = false;
@@ -655,7 +748,8 @@ public class Hormigas extends PApplet {
                     }
                 }while(!next);                         
             }            
-            generacion += 1;            
+            generacion += 1;    
+            */        
         }
     }
 
